@@ -80,17 +80,19 @@ public class ServiceDiscoverySdkTest {
 
         //then
         //services in collection need to be sorted by 'version'
-        for(Service key : keys){
-            System.out.println(key.getVersion());
-        }
+
         Service serviceOne = keys.get(0);
         Service serviceTwo = keys.get(1);
         Service serviceThree = keys.get(2);
         Service serviceFour = keys.get(3);
         Service serviceFive = keys.get(4);
-        System.out.println(serviceOne.toString());
         assertThat(keys.size(), is(5));
+
         assertThat(serviceOne.getVersion(), is("2.3-SNAPSHOT"));
+        assertThat(serviceTwo.getVersion(), is("2.2-SNAPSHOT"));
+        assertThat(serviceThree.getVersion(), is("2.1-SNAPSHOT"));
+        assertThat(serviceFour.getVersion(), is("2.0-SNAPSHOT"));
+        assertThat(serviceFive.getVersion(), is("1.0-SNAPSHOT"));
 
     }
 
@@ -110,25 +112,6 @@ public class ServiceDiscoverySdkTest {
         assertEquals(1,keys.size());
         assertThat(keys.get(0),is("app:sample:localhost:2222:2.0-SNAPSHOT"));
     }
-
-    @Test //to do
-    public void sortKeys() {
-        List<String> keys = new ArrayList();
-        keys.add("app:user:2.1-SNAPSHOT:wowcher.co.uk:8581");
-        keys.add("app:user:2.0-SNAPSHOT:127.0.0.1:2222");
-        keys.add("app:user:1.0-SNAPSHOT:localhost:1260");
-        keys.add("app:auth:5.3-SNAPSHOT:0.0.0.0:1000");
-        keys.add("app:auth:2.2-SNAPSHOT:192.168.0.0:9999");
-
-        List k = keys.stream().sorted().collect(Collectors.toList());
-        Collections.reverse(k);
-        k.stream().forEach(o -> System.out.println(o));
-
-        HeartBeat hb = prepareHeartBeat();
-        service.registerHeartbeat(hb, 100);
-        service.getService("app:sample:localhost:2222:2.0-SNAPSHOT");
-    }
-
 
 
     private HeartBeat prepareHeartBeat() {
