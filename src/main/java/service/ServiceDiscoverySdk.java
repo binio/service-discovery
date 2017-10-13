@@ -7,10 +7,7 @@ import domain.Service;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 public class ServiceDiscoverySdk {
@@ -76,7 +73,8 @@ public class ServiceDiscoverySdk {
         RedisCommands<String, String> commands = getRedisCommands();
         List keys = commands.keys("*app:" + name + ":*");
         List<Service> services = getKeyValues(keys);
-        return services;
+        List<Service> sortedKeys = sortServices(services);
+        return sortedKeys;
     }
 
     private List<Service> getKeyValues(List<String> keys) {
@@ -90,13 +88,14 @@ public class ServiceDiscoverySdk {
 
     private Service getKeyObjMapToService(String key) {
         RedisCommands<String, String> commands = getRedisCommands();
-        System.out.println("getting KEY: "+key);
         Map<String, String> values = commands.hgetall(key);
         Service service = new Service(values);
-
-        values.entrySet().stream().forEach(o->{
-            System.out.println(o.getKey() + " " + o.getValue());
-        });
         return service;
+    }
+
+    private List<Service> sortServices(List<Service> services) {
+         services.sort(Comparator.comparing(Service::getVersion));
+         Collections.reverse(services);
+         return services;
     }
 }
