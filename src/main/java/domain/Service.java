@@ -11,6 +11,7 @@ public class Service {
     String version;
     String loadFactor;
 
+    public Service(){}
     public Service(Map<String, String> items) {
         for (Map.Entry<String, String> entry : items.entrySet()) {
             if(entry.getKey().equals("prefix")){ this.prefix = entry.getValue(); }
