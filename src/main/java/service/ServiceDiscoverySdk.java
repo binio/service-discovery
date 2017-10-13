@@ -3,6 +3,7 @@ package service;
 import dao.RedisConnection;
 import domain.HeartBeat;
 import domain.RedisHeartBeatBuilder;
+import domain.Service;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 
@@ -35,6 +36,7 @@ public class ServiceDiscoverySdk {
     }
 
     public HeartBeat getHeartBeat(String key){
+        //@TODO finish this method
         RedisCommands<String, String> commands = getRedisCommands();
         Map<String, String> values = commands.hgetall(key);
         values.entrySet().stream().forEach(o->{
@@ -64,6 +66,12 @@ public class ServiceDiscoverySdk {
     }
 
     public List getServiceByName(String name) {
+        RedisCommands<String, String> commands = getRedisCommands();
+        List keys = commands.keys("*app:" + name + ":*");
+        return keys;
+    }
+
+    public List<Service> getServiceByNameSorted(String name) {
         RedisCommands<String, String> commands = getRedisCommands();
         List keys = commands.keys("*app:" + name + ":*");
         return keys;
