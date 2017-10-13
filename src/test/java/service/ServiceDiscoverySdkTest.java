@@ -80,11 +80,16 @@ public class ServiceDiscoverySdkTest {
 
         //then
         //services in collection need to be sorted by 'version'
+        for(Service key : keys){
+            System.out.println(key.getVersion());
+        }
         Service serviceOne = keys.get(0);
         Service serviceTwo = keys.get(1);
         Service serviceThree = keys.get(2);
         Service serviceFour = keys.get(3);
         Service serviceFive = keys.get(4);
+        System.out.println(serviceOne.toString());
+        assertThat(keys.size(), is(5));
         assertThat(serviceOne.getVersion(), is("2.3-SNAPSHOT"));
 
     }
