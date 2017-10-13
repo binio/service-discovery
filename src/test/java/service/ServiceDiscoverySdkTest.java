@@ -12,7 +12,6 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import redis.embedded.RedisServer;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -122,7 +121,7 @@ public class ServiceDiscoverySdkTest {
 
         HeartBeat hb = prepareHeartBeat();
         service.registerHeartbeat(hb, 100);
-        service.getHeartBeat("app:sample:localhost:2222:2.0-SNAPSHOT");
+        service.getService("app:sample:localhost:2222:2.0-SNAPSHOT");
     }
 
 
@@ -147,17 +146,34 @@ public class ServiceDiscoverySdkTest {
     }
 
     private void addDummyData(){
+        List<String> serviceNames = Arrays.asList(
+                "app:user:localhost:8581:2.0-SNAPSHOT",
+                "app:auth:localhost:8581:2.1-SNAPSHOT",
+                "app:auth:localhost:2222:2.0-SNAPSHOT",
+                "app:auth:localhost:1260:1.0-SNAPSHOT",
+                "app:auth:localhost:1000:2.3-SNAPSHOT",
+                "app:auth:localhost:9999:2.2-SNAPSHOT",
+                "badly:formated:key-should:not-be:picked-up",
+                "badly-formated:key2:should:not-be:picked-up");
+        for(String keyName : serviceNames) {
+            writeToRedis(keyName,20);
+        }
 
+
+    }
+
+    private void writeToRedis(String key, long ttl) {
+        String[] keyValues = key.split(":");
         RedisCommands<String, String> commands = getRedisCommands();
-        commands.set("app:user:localhost:8581:2.0-SNAPSHOT","1", ex(2));
-        commands.set("app:auth:localhost:8581:2.1-SNAPSHOT","1", ex(2));
-        commands.set("app:auth:localhost:2222:2.0-SNAPSHOT","1", ex(2));
-        commands.set("app:auth:localhost:1260:1.0-SNAPSHOT","1", ex(2));
-        commands.set("app:auth:localhost:1000:2.3-SNAPSHOT","1", ex(2));
-        commands.set("app:auth:localhost:9999:2.2-SNAPSHOT","1", ex(2));
-        commands.set("badly-formated-key-should-not-be-picked-up","1", ex(2));
-        commands.set("badly-formated-key2-should-not-be-picked-up","1", ex(2));
-
+        HashMap<String,String> values = new HashMap<>();
+        values.put("prefix",keyValues[0]);
+        values.put("name",keyValues[1]);
+        values.put("host",keyValues[2]);
+        values.put("port",keyValues[3]);
+        values.put("version",keyValues[4]);
+        values.put("loadFactor","2");
+        commands.hmset(key, values);
+        commands.expire(key, ttl);
     }
 
     private RedisCommands<String, String> getRedisCommands() {
@@ -170,6 +186,5 @@ public class ServiceDiscoverySdkTest {
         RedisCommands<String, String> commands = getRedisCommands();
         commands.flushall();
     }
-
 
 }
