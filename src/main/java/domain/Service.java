@@ -4,12 +4,12 @@ import java.util.Map;
 
 
 public class Service {
-    String prefix;
-    String name;
-    String host;
-    String port;
-    String version;
-    String loadFactor;
+    private String prefix;
+    private String name;
+    private String host;
+    private String port;
+    private String version;
+    private String loadFactor;
 
     public Service(){}
     public Service(Map<String, String> items) {
@@ -72,15 +72,4 @@ public class Service {
         this.loadFactor = loadFactor;
     }
 
-    @Override
-    public String toString() {
-        return "Service{" +
-                "prefix='" + prefix + '\'' +
-                ", name='" + name + '\'' +
-                ", host='" + host + '\'' +
-                ", port='" + port + '\'' +
-                ", version='" + version + '\'' +
-                ", loadFactor='" + loadFactor + '\'' +
-                '}';
-    }
 }
