@@ -2,6 +2,7 @@ package service;
 
 import dao.RedisConnection;
 import domain.HeartBeat;
+import domain.Service;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import org.junit.After;
@@ -42,8 +43,10 @@ public class ServiceDiscoverySdkTest {
 
     @After
     public void tearDown() {
+        flushTestData();
         //redisServer.stop();
     }
+
 
     private void prepareService() {
         connection = new RedisConnection(REDIS_TEST_HOST, REDIS_TEST_PORT, "",0);
@@ -65,6 +68,25 @@ public class ServiceDiscoverySdkTest {
 
         //then
         assertEquals(5, keys.size());
+
+    }
+
+    @Test
+    public void getServiceByNameSorted() {
+        //given
+        //service name 'auth' set with addDummyData() has 5 instances in Redis
+
+        //when
+        List<Service> keys = service.getServiceByNameSorted("auth");
+
+        //then
+        //services in collection need to be sorted by 'version'
+        Service serviceOne = keys.get(0);
+        Service serviceTwo = keys.get(1);
+        Service serviceThree = keys.get(2);
+        Service serviceFour = keys.get(3);
+        Service serviceFive = keys.get(4);
+        assertThat(serviceOne.getVersion(), is("2.3-SNAPSHOT"));
 
     }
 
@@ -141,6 +163,12 @@ public class ServiceDiscoverySdkTest {
     private RedisCommands<String, String> getRedisCommands() {
         StatefulRedisConnection<String, String> connection = this.connection.getConnection();
         return connection.sync();
+    }
+
+
+    private void flushTestData() {
+        RedisCommands<String, String> commands = getRedisCommands();
+        commands.flushall();
     }
 
 
