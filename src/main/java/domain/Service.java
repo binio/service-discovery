@@ -1,8 +1,8 @@
 package domain;
 
-/**
- * Created by tomasz.biniecki on 11/10/2017.
- */
+import java.util.Map;
+
+
 public class Service {
     String prefix;
     String name;
@@ -10,6 +10,10 @@ public class Service {
     String port;
     String version;
     String loadFactor;
+
+    public Service(Map<String, String> values) {
+
+    }
 
     public String getPrefix() {
         return prefix;
