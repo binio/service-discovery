@@ -1,6 +1,6 @@
 package domain;
 
-public class RedisHeartBeatBuilder {
+public class RedisServiceBuilder {
 
     private String prefix;
     private String name;
@@ -9,27 +9,27 @@ public class RedisHeartBeatBuilder {
     private String version;
 
 
-    public RedisHeartBeatBuilder setPrefix(String prefix) {
+    public RedisServiceBuilder setPrefix(String prefix) {
         this.prefix = prefix;
         return this;
     }
 
-    public RedisHeartBeatBuilder setName(String name) {
+    public RedisServiceBuilder setName(String name) {
         this.name = name;
         return this;
     }
 
-    public RedisHeartBeatBuilder setHost(String host) {
+    public RedisServiceBuilder setHost(String host) {
         this.host = host;
         return this;
     }
 
-    public RedisHeartBeatBuilder setPort(String port) {
+    public RedisServiceBuilder setPort(String port) {
         this.port = port;
         return this;
     }
 
-    public RedisHeartBeatBuilder setVersion(String version) {
+    public RedisServiceBuilder setVersion(String version) {
         this.version = version;
         return this;
     }
@@ -43,12 +43,12 @@ public class RedisHeartBeatBuilder {
                 version;
     }
 
-    public String getKeyFromHeartBeat(HeartBeat heartBeat){
-        return this.setHost(heartBeat.getHost())
-                .setName(heartBeat.getName())
-                .setPort(heartBeat.getPort())
-                .setPrefix(heartBeat.getPrefix())
-                .setVersion(heartBeat.getVersion())
+    public String getKeyFromHeartBeat(Service service){
+        return this.setHost(service.getHost())
+                .setName(service.getName())
+                .setPort(service.getPort())
+                .setPrefix(service.getPrefix())
+                .setVersion(service.getVersion())
                 .getKey();
     }
 
