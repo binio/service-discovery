@@ -1,92 +1,38 @@
 package service;
 
 import dao.RedisConnection;
-import domain.HeartBeat;
-import domain.RedisHeartBeatBuilder;
+import dao.ServiceDao;
 import domain.Service;
-import io.lettuce.core.api.StatefulRedisConnection;
-import io.lettuce.core.api.sync.RedisCommands;
 
-import java.util.*;
+import java.util.List;
 
 
 public class ServiceDiscoverySdk {
 
     private RedisConnection connection;
+    private ServiceDao serviceDao;
 
     public ServiceDiscoverySdk(RedisConnection connection){
+
         this.connection = connection;
+        this.serviceDao = new ServiceDao(connection);
     }
 
-    public List getAllServices() {
-        RedisCommands<String, String> commands = getRedisCommands();
-        List keys = commands.keys("*app:*");
-        keys.stream().sorted().forEach(System.out::println);
-        return keys;
+    public List<String> getAllServices() {
+        return serviceDao.getAllServices();
     }
 
-    public void registerHeartbeat(HeartBeat heartBeat, long ttl) {
-        RedisCommands<String, String> commands = getRedisCommands();
-        String key = setKeyFromHeartBeat(heartBeat);
-        Map values = setKeyValues(heartBeat);
-        commands.hmset(key,values);
-        commands.expire(key, ttl);
+    public void registerHeartbeat(Service service, long ttl) {
+        serviceDao.registerService(service, ttl);
     }
 
 
-    private RedisCommands<String, String> getRedisCommands() {
-        StatefulRedisConnection<String, String> connection = this.connection.getConnection();
-        return connection.sync();
-    }
-
-    public String setKeyFromHeartBeat(HeartBeat heartBeat){
-        RedisHeartBeatBuilder redisHeartBeatBuilder = new RedisHeartBeatBuilder();
-        return redisHeartBeatBuilder.getKeyFromHeartBeat(heartBeat);
-    }
-
-    public Map<String, String> setKeyValues(HeartBeat heartBeat) {
-        HashMap values = new HashMap();
-        values.put("prefix", heartBeat.getPrefix());
-        values.put("name", heartBeat.getName());
-        values.put("host", heartBeat.getHost());
-        values.put("port", heartBeat.getPort());
-        values.put("version", heartBeat.getVersion());
-        return values;
-    }
-
-    public List getServiceByName(String name) {
-        RedisCommands<String, String> commands = getRedisCommands();
-        List keys = commands.keys("*app:" + name + ":*");
-        return keys;
+    public List<String> getServiceByName(String name) {
+       return serviceDao.getServicesByName(name);
     }
 
     public List<Service> getServiceByNameSorted(String name) {
-        RedisCommands<String, String> commands = getRedisCommands();
-        List keys = commands.keys("*app:" + name + ":*");
-        List<Service> services = getKeyValues(keys);
-        List<Service> sortedKeys = sortServices(services);
-        return sortedKeys;
+        return serviceDao.getServiceByNameSorted(name);
     }
 
-    private List<Service> getKeyValues(List<String> keys) {
-        List<Service> services = new ArrayList<>();
-        for(String key : keys){
-            Service service = getKeyObjMapToService(key);
-            services.add(service);
-        }
-        return services;
-    }
-
-    private Service getKeyObjMapToService(String key) {
-        RedisCommands<String, String> commands = getRedisCommands();
-        Map<String, String> values = commands.hgetall(key);
-        Service service = new Service(values);
-        return service;
-    }
-
-    private List<Service> sortServices(List<Service> services) {
-         services.sort(Comparator.comparing(Service::getVersion));
-         Collections.reverse(services);
-         return services;
-    }
 }
