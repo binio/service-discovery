@@ -1,7 +1,6 @@
 package service;
 
 import dao.RedisConnection;
-import domain.HeartBeat;
 import domain.Service;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
@@ -12,14 +11,13 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import redis.embedded.RedisServer;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
-import static io.lettuce.core.SetArgs.Builder.ex;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -67,7 +65,6 @@ public class ServiceDiscoverySdkTest {
 
         //then
         assertEquals(5, keys.size());
-
     }
 
     @Test
@@ -93,17 +90,16 @@ public class ServiceDiscoverySdkTest {
         assertThat(serviceThree.getVersion(), is("2.1-SNAPSHOT"));
         assertThat(serviceFour.getVersion(), is("2.0-SNAPSHOT"));
         assertThat(serviceFive.getVersion(), is("1.0-SNAPSHOT"));
-
     }
 
     @Test
     public void registerHeartbeat() {
         //given
-        HeartBeat heartbeat = prepareHeartBeat();
+        Service serviceToRegister = prepareServiceToRegister();
 
         //when
         //register heartbeat with 2sek ttl
-        service.registerHeartbeat(heartbeat,2);
+        service.registerHeartbeat(serviceToRegister,2);
 
         //then
         //check if key exists in redis
@@ -114,14 +110,15 @@ public class ServiceDiscoverySdkTest {
     }
 
 
-    private HeartBeat prepareHeartBeat() {
-        HeartBeat heartbeat = new HeartBeat();
-        heartbeat.setPrefix("app");
-        heartbeat.setName("sample");
-        heartbeat.setHost("localhost");
-        heartbeat.setPort("2222");
-        heartbeat.setVersion("2.0-SNAPSHOT");
-        return heartbeat;
+    private Service prepareServiceToRegister() {
+        Service service = new Service();
+        service.setPrefix("app");
+        service.setName("sample");
+        service.setHost("localhost");
+        service.setPort("2222");
+        service.setVersion("2.0-SNAPSHOT");
+        service.setLoadFactor("2");
+        return service;
     }
 
 
@@ -146,8 +143,6 @@ public class ServiceDiscoverySdkTest {
         for(String keyName : serviceNames) {
             writeToRedis(keyName,20);
         }
-
-
     }
 
     private void writeToRedis(String key, long ttl) {
