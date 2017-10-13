@@ -7,6 +7,7 @@ import domain.Service;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ public class ServiceDiscoverySdk {
         commands.expire(key, ttl);
     }
 
-    public HeartBeat getHeartBeat(String key){
+    public HeartBeat getService(String key){
         //@TODO finish this method
         RedisCommands<String, String> commands = getRedisCommands();
         Map<String, String> values = commands.hgetall(key);
@@ -74,6 +75,28 @@ public class ServiceDiscoverySdk {
     public List<Service> getServiceByNameSorted(String name) {
         RedisCommands<String, String> commands = getRedisCommands();
         List keys = commands.keys("*app:" + name + ":*");
-        return keys;
+        List<Service> services = getKeyValues(keys);
+        return services;
+    }
+
+    private List<Service> getKeyValues(List<String> keys) {
+        List<Service> services = new ArrayList<>();
+        for(String key : keys){
+            Service service = getKeyObjMapToService(key);
+            services.add(service);
+        }
+        return services;
+    }
+
+    private Service getKeyObjMapToService(String key) {
+        RedisCommands<String, String> commands = getRedisCommands();
+        System.out.println("getting KEY: "+key);
+        Map<String, String> values = commands.hgetall(key);
+        Service service = new Service(values);
+
+        values.entrySet().stream().forEach(o->{
+            System.out.println(o.getKey() + " " + o.getValue());
+        });
+        return service;
     }
 }
