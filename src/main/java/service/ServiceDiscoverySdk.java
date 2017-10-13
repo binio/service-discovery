@@ -33,15 +33,6 @@ public class ServiceDiscoverySdk {
         commands.expire(key, ttl);
     }
 
-    public HeartBeat getService(String key){
-        //@TODO finish this method
-        RedisCommands<String, String> commands = getRedisCommands();
-        Map<String, String> values = commands.hgetall(key);
-        values.entrySet().stream().forEach(o->{
-            System.out.println(o.getKey() + " " + o.getValue());
-        });
-        return new HeartBeat();
-    }
 
     private RedisCommands<String, String> getRedisCommands() {
         StatefulRedisConnection<String, String> connection = this.connection.getConnection();
