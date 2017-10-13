@@ -52,13 +52,4 @@ public class RedisServiceBuilder {
                 .getKey();
     }
 
-    @Override
-    public String toString() {
-        return  "prefix='" + prefix + '\'' +
-                ", name='" + name + '\'' +
-                ", host='" + host + '\'' +
-                ", port='" + port + '\'' +
-                ", version='" + version + '\'' +
-                '}';
-    }
 }
