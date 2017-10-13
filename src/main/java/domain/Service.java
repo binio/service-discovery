@@ -11,7 +11,15 @@ public class Service {
     String version;
     String loadFactor;
 
-    public Service(Map<String, String> values) {
+    public Service(Map<String, String> items) {
+        for (Map.Entry<String, String> entry : items.entrySet()) {
+            if(entry.getKey().equals("prefix")){ this.prefix = entry.getValue(); }
+            if(entry.getKey().equals("name")){ this.name = entry.getValue(); }
+            if(entry.getKey().equals("host")){ this.host = entry.getValue(); }
+            if(entry.getKey().equals("port")){ this.port = entry.getValue(); }
+            if(entry.getKey().equals("version")){ this.version = entry.getValue(); }
+            if(entry.getKey().equals("loadFactor")){ this.loadFactor = entry.getValue(); }
+        }
 
     }
 
@@ -61,5 +69,17 @@ public class Service {
 
     public void setLoadFactor(String loadFactor) {
         this.loadFactor = loadFactor;
+    }
+
+    @Override
+    public String toString() {
+        return "Service{" +
+                "prefix='" + prefix + '\'' +
+                ", name='" + name + '\'' +
+                ", host='" + host + '\'' +
+                ", port='" + port + '\'' +
+                ", version='" + version + '\'' +
+                ", loadFactor='" + loadFactor + '\'' +
+                '}';
     }
 }
