@@ -111,14 +111,15 @@ public class ServiceDiscoverySdkTest {
 
 
     private Service prepareServiceToRegister() {
-        Service service = new Service();
-        service.setPrefix("app");
-        service.setName("sample");
-        service.setHost("localhost");
-        service.setPort("2222");
-        service.setVersion("2.0-SNAPSHOT");
-        service.setLoadFactor("2");
-        return service;
+        HashMap<String, String> serviceKv = new HashMap<>();
+        serviceKv.put("prefix", "app");
+        serviceKv.put("name","sample");
+        serviceKv.put("host", "localhost");
+        serviceKv.put("port", "2222");
+        serviceKv.put("version", "2.0-SNAPSHOT");
+        serviceKv.put("loadFactor", "2");
+
+        return new Service(serviceKv);
     }
 
 
