@@ -1,0 +1,10 @@
+ServiceDiscoverySdk usage:
+
+
+REDIS_TEST_HOST, REDIS_TEST_PORT, REDIS_PASSWORD, REDIS_DB - will be injected from Play config
+RedisConnection connection = new RedisConnection(REDIS_TEST_HOST, REDIS_TEST_PORT, REDIS_PASSWORD, REDIS_DB);
+ServiceDiscoverySdk service = new ServiceDiscoverySdk(connection);
+service.getAllServices();
+service.registerHeartbeat(Service service, long ttl)
+service.getServiceByName(String name)
+service.getServiceByNameSorted(String name)
