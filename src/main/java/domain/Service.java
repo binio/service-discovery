@@ -4,23 +4,20 @@ import java.util.Map;
 
 
 public class Service {
-    private String prefix;
+    public  String prefix;
     private String name;
     private String host;
     private String port;
     private String version;
     private String loadFactor;
 
-    public Service(){}
     public Service(Map<String, String> items) {
-        for (Map.Entry<String, String> entry : items.entrySet()) {
-            if(entry.getKey().equals("prefix")){ this.prefix = entry.getValue(); }
-            if(entry.getKey().equals("name")){ this.name = entry.getValue(); }
-            if(entry.getKey().equals("host")){ this.host = entry.getValue(); }
-            if(entry.getKey().equals("port")){ this.port = entry.getValue(); }
-            if(entry.getKey().equals("version")){ this.version = entry.getValue(); }
-            if(entry.getKey().equals("loadFactor")){ this.loadFactor = entry.getValue(); }
-        }
+        this.prefix = items.get("prefix");
+        this.name = items.get("name");
+        this.host = items.get("host");
+        this.port = items.get("port");
+        this.version = items.get("version");
+        this.loadFactor = items.get("loadFactor");
 
     }
 
