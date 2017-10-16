@@ -4,6 +4,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.HashMap;
+
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 
@@ -22,14 +24,16 @@ public class RedisServiceBuilderTest {
     @Test
     public void getKeyFromHeartBeat() throws Exception {
         RedisServiceBuilder builder = new RedisServiceBuilder();
-        Service service = new Service();
-        service.setPrefix("app");
-        service.setName("sample");
-        service.setHost("localhost");
-        service.setPort("1250");
-        service.setVersion("1.0-SNAPSHOT");
-        service.setLoadFactor("2");
-        String key = builder.getKeyFromHeartBeat(service);
+
+        HashMap<String, String> serviceKv = new HashMap<>();
+        serviceKv.put("prefix", "app");
+        serviceKv.put("name","sample");
+        serviceKv.put("host", "localhost");
+        serviceKv.put("port", "1250");
+        serviceKv.put("version", "1.0-SNAPSHOT");
+        serviceKv.put("loadFactor", "2");
+
+        String key = builder.getKeyFromHeartBeat(new Service(serviceKv));
         assertThat(key, is("app:sample:localhost:1250:1.0-SNAPSHOT"));
 
     }
