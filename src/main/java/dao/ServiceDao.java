@@ -1,6 +1,8 @@
 package dao;
 
 import domain.Service;
+import io.lettuce.core.KeyScanCursor;
+import io.lettuce.core.ScanArgs;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import util.ServiceUtils;
@@ -13,25 +15,27 @@ public class ServiceDao {
 
     RedisConnection connection;
 
+    public static final long KEY_COUNT = 200;
     public ServiceDao(RedisConnection connection) {
         this.connection = connection;
     }
 
     public List<String> getAllServices(){
         RedisCommands<String, String> commands = getRedisCommands();
-        List keys = commands.keys("*app:*");
-        return keys;
+        ScanArgs sa = new ScanArgs().limit(KEY_COUNT).match("*app:*");
+        return commands.scan(sa).getKeys();
     }
 
     public List<String> getServicesByName(String name){
         RedisCommands<String, String> commands = getRedisCommands();
-        List keys = commands.keys("*app:" + name + ":*");
-        return keys;
+        ScanArgs sa = new ScanArgs().limit(KEY_COUNT).match("*app:" + name + ":*");
+        return commands.scan(sa).getKeys();
     }
 
     public List<Service> getServiceByNameSorted(String name) {
         RedisCommands<String, String> commands = getRedisCommands();
-        List keys = commands.keys("*app:" + name + ":*");
+        ScanArgs sa = new ScanArgs().limit(KEY_COUNT).match("*app:" + name + ":*");
+        List keys = commands.scan(sa).getKeys();
         List<Service> services = getKeyValues(keys);
         List<Service> sortedKeys = ServiceUtils.sortServices(services);
         return sortedKeys;
