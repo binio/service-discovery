@@ -2,6 +2,7 @@ package service;
 
 import dao.RedisConnection;
 import dao.ServiceDao;
+import dao.ServiceDaoImpl;
 import domain.Service;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public class ServiceDiscoverySdk {
     public ServiceDiscoverySdk(RedisConnection connection){
 
         this.connection = connection;
-        this.serviceDao = new ServiceDao(connection);
+        this.serviceDao = new ServiceDaoImpl(connection);
     }
 
     public List<String> getAllServices() {
