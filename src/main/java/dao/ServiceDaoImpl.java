@@ -2,6 +2,7 @@ package dao;
 
 import domain.Service;
 import io.lettuce.core.ScanArgs;
+import io.lettuce.core.ScanIterator;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import util.ServiceUtils;
@@ -13,28 +14,22 @@ import java.util.Map;
 public class ServiceDaoImpl implements ServiceDao {
 
     RedisConnection connection;
+    public static final long LIMIT = 100;
 
-    public static final long KEY_COUNT = 200;
     public ServiceDaoImpl(RedisConnection connection) {
         this.connection = connection;
     }
 
     public List<String> getAllServices(){
-        RedisCommands<String, String> commands = getRedisCommands();
-        ScanArgs sa = new ScanArgs().limit(KEY_COUNT).match("*app:*");
-        return commands.scan(sa).getKeys();
+        return scanForKeyPattern("*app:*");
     }
 
     public List<String> getServicesByName(String name){
-        RedisCommands<String, String> commands = getRedisCommands();
-        ScanArgs sa = new ScanArgs().limit(KEY_COUNT).match("*app:" + name + ":*");
-        return commands.scan(sa).getKeys();
+        return scanForKeyPattern("*app:" + name + ":*");
     }
 
     public List<Service> getServiceByNameSorted(String name) {
-        RedisCommands<String, String> commands = getRedisCommands();
-        ScanArgs sa = new ScanArgs().limit(KEY_COUNT).match("*app:" + name + ":*");
-        List<String> keys = commands.scan(sa).getKeys();
+        List<String> keys = scanForKeyPattern("*app:" + name + ":*");
         List<Service> services = getKeyValues(keys);
         List<Service> sortedKeys = ServiceUtils.sortServices(services);
         return sortedKeys;
@@ -67,6 +62,18 @@ public class ServiceDaoImpl implements ServiceDao {
         Map<String, String> values = commands.hgetall(key);
         Service service = new Service(values);
         return service;
+    }
+
+    private List<String> scanForKeyPattern(String match){
+        RedisCommands<String, String> commands = getRedisCommands();
+        ScanIterator<String> scan = ScanIterator.scan(commands, ScanArgs.Builder.limit(LIMIT).match(match));
+
+        List<String> keys = new ArrayList<>();
+        while (scan.hasNext()) {
+            String next = scan.next();
+            keys.add(next);
+        }
+        return keys;
     }
 
 }
