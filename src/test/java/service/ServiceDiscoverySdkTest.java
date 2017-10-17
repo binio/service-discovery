@@ -2,6 +2,8 @@ package service;
 
 import dao.RedisConnection;
 import domain.Service;
+import io.lettuce.core.ScanArgs;
+import io.lettuce.core.ScanIterator;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import org.junit.After;
@@ -11,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import redis.embedded.RedisServer;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -109,6 +112,23 @@ public class ServiceDiscoverySdkTest {
         assertThat(keys.get(0),is("app:sample:localhost:2222:2.0-SNAPSHOT"));
     }
 
+    @Test
+    public void testGet100kKeys() {
+        final long LIMIT = 500;
+        final String PATTERN = "*test:pickme:*";
+        add10kKeys();
+        RedisCommands<String, String> commands = getRedisCommands();
+        ScanIterator<String> scan = ScanIterator.scan(commands, ScanArgs.Builder.limit(LIMIT).match(PATTERN));
+
+        List<String> keys = new ArrayList<>();
+        while (scan.hasNext()) {
+            String next = scan.next();
+            keys.add(next);
+        }
+
+        assertEquals(10,keys.size());
+    }
+
 
     private Service prepareServiceToRegister() {
         HashMap<String, String> serviceKv = new HashMap<>();
@@ -158,6 +178,30 @@ public class ServiceDiscoverySdkTest {
         values.put("loadFactor","2");
         commands.hmset(key, values);
         commands.expire(key, ttl);
+    }
+
+    private void add10kKeys(){
+        RedisCommands<String, String> commands = getRedisCommands();
+
+        for (int i=0; i < 10000; i++) {
+            String appName = "test";
+            if((i%1000)==0){
+                appName = "pickme";
+            }
+            HashMap<String,String> values = new HashMap<>();
+            values.put("prefix","test");
+            values.put("name",appName);
+            values.put("host","localhost");
+            values.put("port","0000");
+            values.put("version",i + "-SNAPSHOT");
+            values.put("loadFactor","1");
+            StringBuffer key = new StringBuffer();
+            key.append("test:" + appName + ":localhost:0000:");
+            key.append(i + "-SNAPSHOT");
+
+            commands.hmset(key.toString(), values);
+            commands.expire(key.toString(), 30);
+        }
     }
 
     private RedisCommands<String, String> getRedisCommands() {
