@@ -122,8 +122,7 @@ public class ServiceDiscoverySdkTest {
 
         List<String> keys = new ArrayList<>();
         while (scan.hasNext()) {
-            String next = scan.next();
-            keys.add(next);
+            keys.add(scan.next());
         }
 
         assertEquals(10,keys.size());
