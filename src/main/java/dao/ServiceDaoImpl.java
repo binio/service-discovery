@@ -15,21 +15,22 @@ public class ServiceDaoImpl implements ServiceDao {
 
     RedisConnection connection;
     public static final long LIMIT = 100;
+    public static final String KEY_PREFIX = "app";
 
     public ServiceDaoImpl(RedisConnection connection) {
         this.connection = connection;
     }
 
     public List<String> getAllServices(){
-        return scanForKeyPattern("*app:*");
+        return scanForKeyPattern("*" + KEY_PREFIX + ":*");
     }
 
     public List<String> getServicesByName(String name){
-        return scanForKeyPattern("*app:" + name + ":*");
+        return scanForKeyPattern("*" + KEY_PREFIX + ":" + name + ":*");
     }
 
     public List<Service> getServiceByNameSorted(String name) {
-        List<String> keys = scanForKeyPattern("*app:" + name + ":*");
+        List<String> keys = scanForKeyPattern("*" + KEY_PREFIX + ":" + name + ":*");
         List<Service> services = getKeyValues(keys);
         List<Service> sortedKeys = ServiceUtils.sortServices(services);
         return sortedKeys;
@@ -70,8 +71,7 @@ public class ServiceDaoImpl implements ServiceDao {
 
         List<String> keys = new ArrayList<>();
         while (scan.hasNext()) {
-            String next = scan.next();
-            keys.add(next);
+            keys.add(scan.next());
         }
         return keys;
     }
