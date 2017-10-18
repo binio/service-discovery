@@ -89,7 +89,11 @@ public class ServiceDiscoverySdkTest {
         assertThat(keys.size(), is(5));
 
         assertThat(serviceOne.getVersion(), is("2.3-SNAPSHOT"));
-        assertThat(serviceTwo.getVersion(), is("2.2-SNAPSHOT"));
+        assertThat(serviceOne.getLoadFactor(), is("2"));
+
+        assertThat(serviceTwo.getVersion(), is("2.3-SNAPSHOT"));
+        assertThat(serviceTwo.getLoadFactor(), is("1"));
+
         assertThat(serviceThree.getVersion(), is("2.1-SNAPSHOT"));
         assertThat(serviceFour.getVersion(), is("2.0-SNAPSHOT"));
         assertThat(serviceFive.getVersion(), is("1.0-SNAPSHOT"));
@@ -152,14 +156,14 @@ public class ServiceDiscoverySdkTest {
 
     private void addDummyData(){
         List<String> serviceNames = Arrays.asList(
-                "app:user:localhost:8581:2.0-SNAPSHOT",
-                "app:auth:localhost:8581:2.1-SNAPSHOT",
-                "app:auth:localhost:2222:2.0-SNAPSHOT",
-                "app:auth:localhost:1260:1.0-SNAPSHOT",
-                "app:auth:localhost:1000:2.3-SNAPSHOT",
-                "app:auth:localhost:9999:2.2-SNAPSHOT",
-                "badly:formated:key-should:not-be:picked-up",
-                "badly-formated:key2:should:not-be:picked-up");
+                "app:user:localhost:8581:2.0-SNAPSHOT:1",
+                "app:auth:localhost:8581:2.1-SNAPSHOT:1",
+                "app:auth:localhost:2222:2.0-SNAPSHOT:1",
+                "app:auth:localhost:1260:1.0-SNAPSHOT:1",
+                "app:auth:localhost:1000:2.3-SNAPSHOT:1",
+                "app:auth:localhost:9999:2.3-SNAPSHOT:2",
+                "badly:formated:key-should:not-be:picked-up:1",
+                "badly-formated:key2:should:not-be:picked-up:1");
         for(String keyName : serviceNames) {
             writeToRedis(keyName,20);
         }
@@ -174,7 +178,7 @@ public class ServiceDiscoverySdkTest {
         values.put("host",keyValues[2]);
         values.put("port",keyValues[3]);
         values.put("version",keyValues[4]);
-        values.put("loadFactor","2");
+        values.put("loadFactor",keyValues[5]);
         commands.hmset(key, values);
         commands.expire(key, ttl);
     }
