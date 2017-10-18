@@ -7,13 +7,16 @@ import domain.Service;
 
 import java.util.List;
 
-
 public class ServiceDiscoverySdk {
 
     private ServiceDao serviceDao;
 
     public ServiceDiscoverySdk(RedisConnection connection){
-        this.serviceDao = new ServiceDaoImpl(connection);
+        this(new ServiceDaoImpl(connection));
+    }
+
+    public ServiceDiscoverySdk(ServiceDao serviceDao) {
+        this.serviceDao = serviceDao;
     }
 
     public List<String> getAllServices() {

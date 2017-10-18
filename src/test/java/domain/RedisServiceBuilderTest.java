@@ -13,16 +13,7 @@ import static org.junit.Assert.*;
 public class RedisServiceBuilderTest {
 
     @Test
-    public void getKey() throws Exception {
-        RedisServiceBuilder builder = new RedisServiceBuilder();
-        String key = builder.setPrefix("app").setName("sample").setHost("localhost").setPort("1250").setVersion("1.0-SNAPSHOT").getKey();
-        assertThat(key, is("app:sample:localhost:1250:1.0-SNAPSHOT"));
-    }
-
-    @Test
     public void getKeyFromHeartBeat() throws Exception {
-        RedisServiceBuilder builder = new RedisServiceBuilder();
-
         HashMap<String, String> serviceKv = new HashMap<>();
         serviceKv.put("prefix", "app");
         serviceKv.put("name","sample");
@@ -31,7 +22,7 @@ public class RedisServiceBuilderTest {
         serviceKv.put("version", "1.0-SNAPSHOT");
         serviceKv.put("loadFactor", "2");
 
-        String key = builder.getKeyFromHeartBeat(new Service(serviceKv));
+        String key = new Service(serviceKv).getKey();
         assertThat(key, is("app:sample:localhost:1250:1.0-SNAPSHOT"));
 
     }

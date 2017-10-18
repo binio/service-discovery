@@ -10,6 +10,7 @@ import util.ServiceUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ServiceDaoImpl implements ServiceDao {
 
@@ -37,10 +38,9 @@ public class ServiceDaoImpl implements ServiceDao {
 
     public void registerService(Service service, long ttl){
         RedisCommands<String, String> commands = getRedisCommands();
-        String key = ServiceUtils.setKeyFromHeartBeat(service);
-        Map<String, String> values = ServiceUtils.setKeyValues(service);
-        commands.hmset(key,values);
-        commands.expire(key, ttl);
+        Map<String, String> values = service.getKeyValues();
+        commands.hmset(service.getKey(),values);
+        commands.expire(service.getKey(), ttl);
     }
 
     private RedisCommands<String, String> getRedisCommands() {
@@ -49,12 +49,7 @@ public class ServiceDaoImpl implements ServiceDao {
     }
 
     private List<Service> getKeyValues(List<String> keys) {
-        List<Service> services = new ArrayList<>();
-        for(String key : keys){
-            Service service = getKeyObjMapToService(key);
-            services.add(service);
-        }
-        return services;
+        return keys.stream().map(this::getKeyObjMapToService).collect(Collectors.toList());
     }
 
     private Service getKeyObjMapToService(String key) {
@@ -66,12 +61,7 @@ public class ServiceDaoImpl implements ServiceDao {
     private List<String> scanForKeyPattern(String match){
         RedisCommands<String, String> commands = getRedisCommands();
         ScanIterator<String> scan = ScanIterator.scan(commands, ScanArgs.Builder.limit(LIMIT).match(match));
-
-        List<String> keys = new ArrayList<>();
-        while (scan.hasNext()) {
-            keys.add(scan.next());
-        }
-        return keys;
+        return scan.stream().collect(Collectors.toList());
     }
 
 }
