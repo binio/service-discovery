@@ -13,9 +13,9 @@ import java.util.Map;
 
 public class ServiceDaoImpl implements ServiceDao {
 
-    RedisConnection connection;
-    public static final long LIMIT = 100;
-    public static final String KEY_PREFIX = "app";
+    private RedisConnection connection;
+    private static final long LIMIT = 100;
+    private static final String KEY_PREFIX = "app";
 
     public ServiceDaoImpl(RedisConnection connection) {
         this.connection = connection;
@@ -32,14 +32,13 @@ public class ServiceDaoImpl implements ServiceDao {
     public List<Service> getServiceByNameSorted(String name) {
         List<String> keys = scanForKeyPattern("*" + KEY_PREFIX + ":" + name + ":*");
         List<Service> services = getKeyValues(keys);
-        List<Service> sortedKeys = ServiceUtils.sortServices(services);
-        return sortedKeys;
+        return ServiceUtils.sortServices(services);
     }
 
     public void registerService(Service service, long ttl){
         RedisCommands<String, String> commands = getRedisCommands();
         String key = ServiceUtils.setKeyFromHeartBeat(service);
-        Map values = ServiceUtils.setKeyValues(service);
+        Map<String, String> values = ServiceUtils.setKeyValues(service);
         commands.hmset(key,values);
         commands.expire(key, ttl);
     }
@@ -61,8 +60,7 @@ public class ServiceDaoImpl implements ServiceDao {
     private Service getKeyObjMapToService(String key) {
         RedisCommands<String, String> commands = getRedisCommands();
         Map<String, String> values = commands.hgetall(key);
-        Service service = new Service(values);
-        return service;
+        return new Service(values);
     }
 
     private List<String> scanForKeyPattern(String match){

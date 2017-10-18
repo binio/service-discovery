@@ -26,13 +26,13 @@ import static org.junit.Assert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public class ServiceDiscoverySdkTest {
 
-    RedisServer redisServer;
-    RedisConnection connection;
-    ServiceDiscoverySdk service;
+    private RedisServer redisServer;
+    private RedisConnection connection;
+    private ServiceDiscoverySdk service;
 
-    public  static final String REDIS_TEST_HOST = "localhost";
-    public  static final String REDIS_MEMORY_HEAP = "maxmemory 128M";
-    public  static final Integer REDIS_TEST_PORT = 6370;
+    private static final String REDIS_TEST_HOST = "localhost";
+    private static final String REDIS_MEMORY_HEAP = "maxmemory 128M";
+    private static final Integer REDIS_TEST_PORT = 6370;
 
     @Before
     public void setUp() {
@@ -194,12 +194,10 @@ public class ServiceDiscoverySdkTest {
             values.put("port","0000");
             values.put("version",i + "-SNAPSHOT");
             values.put("loadFactor","1");
-            StringBuffer key = new StringBuffer();
-            key.append("test:" + appName + ":localhost:0000:");
-            key.append(i + "-SNAPSHOT");
+            String key = "test:" + appName + ":localhost:0000:" + i + "-SNAPSHOT";
 
-            commands.hmset(key.toString(), values);
-            commands.expire(key.toString(), 30);
+            commands.hmset(key, values);
+            commands.expire(key, 30);
         }
     }
 

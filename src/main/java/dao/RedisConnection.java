@@ -8,7 +8,6 @@ import io.lettuce.core.api.StatefulRedisConnection;
 public class RedisConnection {
 
     private StatefulRedisConnection<String, String> connection;
-    private RedisClient client;
 
     public RedisConnection(String host, Integer port, String password, Integer db) {
         RedisURI redisUri = RedisURI.Builder.redis(host)
@@ -16,7 +15,7 @@ public class RedisConnection {
                 .withPassword(password)
                 .withDatabase(db)
                 .build();
-        client = RedisClient.create(redisUri);
+        RedisClient client = RedisClient.create(redisUri);
         connection = client.connect();
 
     }

@@ -13,7 +13,7 @@ public class ServiceUtils {
     }
 
     public static Map<String, String> setKeyValues(Service service) {
-        HashMap values = new HashMap();
+        HashMap<String, String> values = new HashMap<>();
         values.put("prefix", service.getPrefix());
         values.put("name", service.getName());
         values.put("host", service.getHost());

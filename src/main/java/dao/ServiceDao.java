@@ -6,8 +6,8 @@ import io.lettuce.core.api.sync.RedisCommands;
 import java.util.List;
 
 public interface ServiceDao {
-    public List<String> getAllServices();
-    public List<String> getServicesByName(String name);
-    public List<Service> getServiceByNameSorted(String name);
-    public void registerService(Service service, long ttl);
+    List<String> getAllServices();
+    List<String> getServicesByName(String name);
+    List<Service> getServiceByNameSorted(String name);
+    void registerService(Service service, long ttl);
 }

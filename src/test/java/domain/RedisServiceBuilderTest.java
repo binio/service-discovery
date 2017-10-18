@@ -12,14 +12,12 @@ import static org.junit.Assert.*;
 @RunWith(MockitoJUnitRunner.class)
 public class RedisServiceBuilderTest {
 
-
     @Test
     public void getKey() throws Exception {
         RedisServiceBuilder builder = new RedisServiceBuilder();
         String key = builder.setPrefix("app").setName("sample").setHost("localhost").setPort("1250").setVersion("1.0-SNAPSHOT").getKey();
         assertThat(key, is("app:sample:localhost:1250:1.0-SNAPSHOT"));
     }
-
 
     @Test
     public void getKeyFromHeartBeat() throws Exception {

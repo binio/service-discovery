@@ -10,12 +10,9 @@ import java.util.List;
 
 public class ServiceDiscoverySdk {
 
-    private RedisConnection connection;
     private ServiceDao serviceDao;
 
     public ServiceDiscoverySdk(RedisConnection connection){
-
-        this.connection = connection;
         this.serviceDao = new ServiceDaoImpl(connection);
     }
 

@@ -4,7 +4,7 @@ import java.util.Map;
 
 
 public class Service {
-    public  String prefix;
+    private String prefix;
     private String name;
     private String host;
     private String port;
