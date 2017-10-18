@@ -12,7 +12,7 @@ public class ServiceUtils {
         Comparator<Service> byLoadFactor = Comparator.comparing(Service::getLoadFactor);
 
         List<Service> list = services.stream()
-                .sorted(byServiceVersion.thenComparing(byLoadFactor))
+                .sorted(byServiceVersion.thenComparing(byLoadFactor.reversed()))
                 .collect(Collectors.toList());
         Collections.reverse(list);
         return list;
