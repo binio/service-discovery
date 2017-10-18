@@ -89,10 +89,10 @@ public class ServiceDiscoverySdkTest {
         assertThat(keys.size(), is(5));
 
         assertThat(serviceOne.getVersion(), is("2.3-SNAPSHOT"));
-        assertThat(serviceOne.getLoadFactor(), is("2"));
+        assertThat(serviceOne.getLoadFactor(), is("1"));
 
         assertThat(serviceTwo.getVersion(), is("2.3-SNAPSHOT"));
-        assertThat(serviceTwo.getLoadFactor(), is("1"));
+        assertThat(serviceTwo.getLoadFactor(), is("2"));
 
         assertThat(serviceThree.getVersion(), is("2.1-SNAPSHOT"));
         assertThat(serviceFour.getVersion(), is("2.0-SNAPSHOT"));
