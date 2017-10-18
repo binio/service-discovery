@@ -11,6 +11,7 @@ public class Service {
     private String version;
     private String loadFactor;
 
+    public Service() {}
     public Service(Map<String, String> items) {
         this.prefix = items.get("prefix");
         this.name = items.get("name");
