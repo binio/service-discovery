@@ -1,9 +1,15 @@
 package dao;
 
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mashape.unirest.request.HttpRequest;
 import domain.Service;
 import io.lettuce.core.ScanArgs;
 import io.lettuce.core.ScanIterator;
 import io.lettuce.core.api.sync.RedisCommands;
+import org.apache.http.HttpEntity;
 
 import java.util.Comparator;
 import java.util.List;
@@ -13,13 +19,13 @@ import java.util.stream.Stream;
 
 import static java.util.Comparator.comparing;
 
-public class ServiceDaoImpl implements ServiceDao {
+public class RedisServiceDao implements ServiceDao {
 
     private RedisConnection connection;
     private static final long LIMIT = 100;
     private static final String KEY_PREFIX = "app";
 
-    public ServiceDaoImpl(RedisConnection connection) {
+    public RedisServiceDao(RedisConnection connection) {
         this.connection = connection;
     }
 
@@ -46,6 +52,26 @@ public class ServiceDaoImpl implements ServiceDao {
         Map<String, String> values = service.getKeyValues();
         commands.hmset(service.getKey(),values);
         commands.expire(service.getKey(), ttl);
+    }
+
+    public HttpResponse<JsonNode> invoke(String domain, String path, String body) {
+        /*
+        * 1. How to find out type of request PUT / GET /  POST
+        * 2. What headers?
+        * 3. Are parameters in the body?
+        * */
+        HttpResponse response = null;
+        HttpRequest request = Unirest.post("http://someurl/post")
+                .header("accept", "application/json")
+                .queryString("apiKey", "123")
+                .field("parameter", "value")
+                .field("foo", "bar").getHttpRequest();
+            try{
+                response =  request.asJson();
+            }catch(UnirestException e){
+                e.printStackTrace();
+            }
+            return response;
     }
 
     private Service getKeyObjMapToService(String key) {
