@@ -4,7 +4,6 @@ import dao.RedisConnection;
 import domain.Service;
 import io.lettuce.core.ScanArgs;
 import io.lettuce.core.ScanIterator;
-import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import org.junit.After;
 import org.junit.Before;
@@ -206,8 +205,7 @@ public class ServiceDiscoverySdkTest {
     }
 
     private RedisCommands<String, String> getRedisCommands() {
-        StatefulRedisConnection<String, String> connection = this.connection.getConnection();
-        return connection.sync();
+        return connection.getSyncConnection();
     }
 
 

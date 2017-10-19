@@ -3,14 +3,14 @@ package dao;
 import domain.Service;
 import io.lettuce.core.ScanArgs;
 import io.lettuce.core.ScanIterator;
-import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
-import util.ServiceUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.Comparator.comparing;
 
 public class ServiceDaoImpl implements ServiceDao {
 
@@ -23,17 +23,21 @@ public class ServiceDaoImpl implements ServiceDao {
     }
 
     public List<String> getAllServices(){
-        return scanForKeyPattern("*" + KEY_PREFIX + ":*");
+        return scanForKeyPattern("*" + KEY_PREFIX + ":*")
+                .collect(Collectors.toList());
     }
 
     public List<String> getServicesByName(String name){
-        return scanForKeyPattern("*" + KEY_PREFIX + ":" + name + ":*");
+        return scanForKeyPattern("*" + KEY_PREFIX + ":" + name + ":*")
+                .collect(Collectors.toList());
     }
 
     public List<Service> getServiceByNameSorted(String name) {
-        List<String> keys = scanForKeyPattern("*" + KEY_PREFIX + ":" + name + ":*");
-        List<Service> services = getKeyValues(keys);
-        return ServiceUtils.sortServices(services);
+
+        return scanForKeyPattern("*" + KEY_PREFIX + ":" + name + ":*")
+                .map(this::getKeyObjMapToService)
+                .sorted(comparing(Service::getVersion).thenComparing(comparing(Service::getLoadFactor)).reversed())
+                .collect(Collectors.toList());
     }
 
     public void registerService(Service service, long ttl){
@@ -43,25 +47,19 @@ public class ServiceDaoImpl implements ServiceDao {
         commands.expire(service.getKey(), ttl);
     }
 
-    private RedisCommands<String, String> getRedisCommands() {
-        StatefulRedisConnection<String, String> connection = this.connection.getConnection();
-        return connection.sync();
-    }
-
-    private List<Service> getKeyValues(List<String> keys) {
-        return keys.stream().map(this::getKeyObjMapToService).collect(Collectors.toList());
-    }
-
     private Service getKeyObjMapToService(String key) {
         RedisCommands<String, String> commands = getRedisCommands();
         Map<String, String> values = commands.hgetall(key);
         return new Service(values);
     }
 
-    private List<String> scanForKeyPattern(String match){
+    private Stream<String> scanForKeyPattern(String match){
         RedisCommands<String, String> commands = getRedisCommands();
         ScanIterator<String> scan = ScanIterator.scan(commands, ScanArgs.Builder.limit(LIMIT).match(match));
-        return scan.stream().collect(Collectors.toList());
+        return scan.stream();
     }
 
+    private RedisCommands<String, String> getRedisCommands() {
+        return connection.getSyncConnection();
+    }
 }

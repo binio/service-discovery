@@ -7,7 +7,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.HashMap;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RedisServiceBuilderTest {

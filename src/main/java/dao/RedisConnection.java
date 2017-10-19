@@ -4,6 +4,7 @@ package dao;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
+import io.lettuce.core.api.sync.RedisCommands;
 
 public class RedisConnection {
 
@@ -20,9 +21,7 @@ public class RedisConnection {
 
     }
 
-    public StatefulRedisConnection<String, String> getConnection() {
-        return connection;
+    public RedisCommands<String, String> getSyncConnection() {
+        return connection.sync();
     }
-
-
 }
