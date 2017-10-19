@@ -1,7 +1,6 @@
 package dao;
 
 import domain.Service;
-import io.lettuce.core.api.sync.RedisCommands;
 
 import java.util.List;
 

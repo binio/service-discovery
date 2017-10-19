@@ -4,7 +4,6 @@ import dao.RedisConnection;
 import domain.Service;
 import io.lettuce.core.ScanArgs;
 import io.lettuce.core.ScanIterator;
-import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import org.junit.After;
 import org.junit.Before;
@@ -70,7 +69,7 @@ public class ServiceDiscoverySdkTest {
         assertEquals(5, keys.size());
     }
 
-    @Test
+   @Test
     public void getServiceByNameSorted() {
         //given
         //service name 'auth' set with addDummyData() has 5 instances in Redis
@@ -206,8 +205,7 @@ public class ServiceDiscoverySdkTest {
     }
 
     private RedisCommands<String, String> getRedisCommands() {
-        StatefulRedisConnection<String, String> connection = this.connection.getConnection();
-        return connection.sync();
+        return connection.getSyncConnection();
     }
 
 
