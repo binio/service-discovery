@@ -61,11 +61,8 @@ public class RedisServiceDao implements ServiceDao {
         * 3. Are parameters in the body?
         * */
         HttpResponse response = null;
-        HttpRequest request = Unirest.post("http://someurl/post")
-                .header("accept", "application/json")
-                .queryString("apiKey", "123")
-                .field("parameter", "value")
-                .field("foo", "bar").getHttpRequest();
+        HttpRequest request = Unirest.post("http://localhost:9005/power/12")
+                .header("accept", "application/json").getHttpRequest();
             try{
                 response =  request.asJson();
             }catch(UnirestException e){
