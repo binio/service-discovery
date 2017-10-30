@@ -54,23 +54,6 @@ public class RedisServiceDao implements ServiceDao {
         commands.expire(service.getKey(), ttl);
     }
 
-    public HttpResponse<JsonNode> invoke(String domain, String path, String body) {
-        /*
-        * 1. How to find out type of request PUT / GET /  POST
-        * 2. What headers?
-        * 3. Are parameters in the body?
-        * */
-        HttpResponse response = null;
-        HttpRequest request = Unirest.post("http://localhost:9005/power/12")
-                .header("accept", "application/json").getHttpRequest();
-            try{
-                response =  request.asJson();
-            }catch(UnirestException e){
-                e.printStackTrace();
-            }
-            return response;
-    }
-
     private Service getKeyObjMapToService(String key) {
         RedisCommands<String, String> commands = getRedisCommands();
         Map<String, String> values = commands.hgetall(key);
