@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>wowcher-sdk</name>
-    <description>SDK to use with Service Discovery </description>
+    <description>SDK to use with Service Discovery</description>
     <dependencies>
 
         <dependency>
